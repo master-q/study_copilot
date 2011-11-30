@@ -1,4 +1,4 @@
-module Main where
+module Fibonacci where
 
 import qualified Prelude as P
 import Copilot.Language.Prelude
@@ -10,6 +10,3 @@ fib = [0, 1] ++ fib + drop 1 fib
 fibSpec :: Spec
 fibSpec = do
   trigger "fib_out" true [arg fib]
-
-main :: IO ()
-main = interpret 20 [] fibSpec
