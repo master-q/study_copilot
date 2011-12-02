@@ -9,7 +9,7 @@ PROG?= boot
 NEWVERSWHAT?= "BIOS Boot"
 VERSIONFILE?= ${.CURDIR}/../version
 
-SOURCES?= biosboot.S boot2.c conf.c devopen.c exec.c
+SOURCES?= biosboot.S boot2.c
 SRCS= ${SOURCES}
 .if !make(depend)
 SRCS+= vers.c

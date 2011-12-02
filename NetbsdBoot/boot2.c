@@ -7,7 +7,6 @@
 #include <lib/libkern/libkern.h>
 
 #include <libi386.h>
-#include "devopen.h"
 #include "bootmod.h"
 
 #ifdef SUPPORT_PS2
@@ -16,8 +15,6 @@
 
 extern struct x86_boot_params boot_params;
 extern	const char bootprog_name[], bootprog_rev[], bootprog_kernrev[];
-
-int boot_biosdev;
 
 void boot2(int, u_int);
 
@@ -50,13 +47,6 @@ boot2(int biosdev, u_int biossector)
 		step();
 	}
 	while (1) {}
-}
-
-int
-parsebootfile(const char *fname, char **fsname, char **devname,
-              int *unit, int *partition, const char **file)
-{
-	return 0; /* dummy */
 }
 
 void pout_w64(uint64_t var)
