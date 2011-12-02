@@ -14,6 +14,7 @@ SRCS= ${SOURCES}
 .if !make(depend)
 SRCS+= vers.c
 .endif
+SRCS+= copilot.c
 
 PIE_CFLAGS=
 PIE_AFLAGS=
@@ -59,7 +60,7 @@ CPUFLAGS=  -march=i386 -mtune=i386
 .endif
 
 COPTS+=    -ffreestanding
-CFLAGS+= -Wall -Wmissing-prototypes -Wstrict-prototypes
+#CFLAGS+= -Wall -Wmissing-prototypes -Wstrict-prototypes
 CPPFLAGS+= -nostdinc -D_STANDALONE
 CPPFLAGS+= -I$S
 
@@ -137,10 +138,15 @@ cleanlibdir:
 LIBLIST= ${LIBI386} ${LIBSA} ${LIBZ} ${LIBKERN} ${LIBI386} ${LIBSA}
 # LIBLIST= ${LIBSA} ${LIBKERN} ${LIBI386} ${LIBSA} ${LIBZ} ${LIBKERN}
 
-CLEANFILES+= ${PROG}.tmp ${PROG}.map vers.c
+CLEANFILES+= ${PROG}.tmp ${PROG}.map vers.c copilot.c copilot.h
 
 vers.c: ${VERSIONFILE} ${SOURCES} ${LIBLIST} ${.CURDIR}/../Makefile.boot
 	${HOST_SH} ${S}conf/newvers_stand.sh -DM ${VERSIONFILE} x86 ${NEWVERSWHAT}
+
+COPILOTFILE?= ${.CURDIR}/../Bootmenu.hs
+copilot.c: ${COPILOTFILE}
+	runghc ${COPILOTFILE}
+	echo >> copilot.h
 
 # Anything that calls 'real_to_prot' must have a %pc < 0x10000.
 # We link the program, find the callers (all in libi386), then

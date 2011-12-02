@@ -25,6 +25,7 @@ void
 boot2(int biosdev, u_int biossector)
 {
 	extern char twiddle_toggle;
+	int i;
 
 	twiddle_toggle = 1;	/* no twiddling until we're ready */
 	printf("\f");		/* clear screen (hopefully) */
@@ -44,6 +45,10 @@ boot2(int biosdev, u_int biossector)
 	    ">> %s, Revision %s (from NetBSD %s)\n"
 	    ">> for Book:Lambda Ka Musume\n",
 	    bootprog_name, bootprog_rev, bootprog_kernrev);
+
+	for (i = 0; i < 15; i++) {
+		step();
+	}
 	while (1) {}
 }
 
@@ -52,4 +57,9 @@ parsebootfile(const char *fname, char **fsname, char **devname,
               int *unit, int *partition, const char **file)
 {
 	return 0; /* dummy */
+}
+
+void pout_w64(uint64_t var)
+{
+	printf("(%llu)\n", var);
 }
