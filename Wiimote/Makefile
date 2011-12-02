@@ -1,6 +1,3 @@
-#run:
-#	runghc Run.hs
-
 all: compile
 
 compile: copilot.o main.o
@@ -9,7 +6,7 @@ compile: copilot.o main.o
 copilot.c: Compile.hs Wiimote.hs
 	runghc Compile.hs
 
-test:
+test: compile
 	./Main
 
 clean:

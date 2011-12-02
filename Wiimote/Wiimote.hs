@@ -6,7 +6,7 @@ import Copilot.Language.Prelude
 import Copilot.Language
 
 inited :: Stream Word32
-inited = extern "g_inited"
+inited = [0,1,2] ++ 3
 
 dAcc0, dAcc1, dAcc2 :: Stream Double
 dAcc0 = externFun "cast_double" [funArg $ externW8 "g_acc0"]
@@ -32,10 +32,15 @@ acc = sqrt $ px + py + pz
         py = aY ** 2
         pz = aZ ** 2
 
+accPrint :: Stream Bool
+accPrint = (acc > 4.0) && ((accB1 > 4.0) && (accB2 > 4.0))
+  where accB1 = [0] ++ acc
+        accB2 = [0] ++ accB1
+
 wiiSpec :: Spec
 wiiSpec = do
   trigger "l_cwiid_open" (inited == 0) []
   trigger "l_cwiid_get_acc_cal" (inited == 1) []
   trigger "l_cwiid_set_rpt_mode" (inited == 2) []
   trigger "l_cwiid_get_state" (inited == 3) []
-  trigger "pout_d" (inited == 3) [arg acc]
+  trigger "pout_d" (accPrint) [arg acc]
