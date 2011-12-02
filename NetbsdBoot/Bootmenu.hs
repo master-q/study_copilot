@@ -7,9 +7,12 @@ import Copilot.Compile.C99
 fib :: Stream Word64
 fib = [0, 1] ++ fib + drop 1 fib
 
-fibSpec :: Spec
-fibSpec = do
-  trigger "pout_w64" true [arg fib]
+lGetChar :: Stream Word8
+lGetChar = externFun "l_getchar" []
+
+menuSpec :: Spec
+menuSpec = do
+  trigger "l_putchar" true [arg lGetChar]
 
 main :: IO ()
-main = reify fibSpec >>= compile defaultParams
+main = reify menuSpec >>= compile defaultParams

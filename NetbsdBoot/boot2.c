@@ -22,7 +22,6 @@ void
 boot2(int biosdev, u_int biossector)
 {
 	extern char twiddle_toggle;
-	int i;
 
 	twiddle_toggle = 1;	/* no twiddling until we're ready */
 	printf("\f");		/* clear screen (hopefully) */
@@ -43,13 +42,22 @@ boot2(int biosdev, u_int biossector)
 	    ">> for Book:Lambda Ka Musume\n",
 	    bootprog_name, bootprog_rev, bootprog_kernrev);
 
-	for (i = 0; i < 15; i++) {
+	while (1) {
 		step();
 	}
-	while (1) {}
 }
 
 void pout_w64(uint64_t var)
 {
 	printf("(%llu)\n", var);
+}
+
+uint8_t l_getchar(void)
+{
+	return (getchar() & 0177);
+}
+
+void l_putchar(uint8_t c)
+{
+	putchar((int) c);
 }
