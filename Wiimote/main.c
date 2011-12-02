@@ -5,27 +5,18 @@
 #include <cwiid.h>
 #include "copilot.h"
 
-/*
-struct cwiid_state {
-        uint8_t rpt_mode;
-        uint8_t led;
-        uint8_t rumble;
-        uint8_t battery;
-        uint16_t buttons;
-        uint8_t acc[3];
-        struct cwiid_ir_src ir_src[CWIID_IR_SRC_COUNT];
-        enum cwiid_ext_type ext_type;
-        union ext_state ext;
-        enum cwiid_error error;
-};
-*/
-
 static cwiid_wiimote_t *g_handle = NULL;
 
 uint32_t g_inited = 0;
 uint8_t g_acc0 = 0;
 uint8_t g_acc1 = 0;
 uint8_t g_acc2 = 0;
+uint8_t g_zero0 = 0;
+uint8_t g_zero1 = 0;
+uint8_t g_zero2 = 0;
+uint8_t g_one0 = 0;
+uint8_t g_one1 = 0;
+uint8_t g_one2 = 0;
 
 // cwiid_wiimote_t *cwiid_open(bdaddr_t *bdaddr, int flags)
 void l_cwiid_open(void)
@@ -45,11 +36,27 @@ void l_cwiid_open(void)
 	g_inited = 1;
 }
 
+// cwiid_get_acc_cal(wiimote, CWIID_EXT_NONE, &wm_cal))
+void l_cwiid_get_acc_cal(void)
+{
+	struct acc_cal cal;
+
+	/* xxxx void */ cwiid_get_acc_cal(g_handle, CWIID_EXT_NONE, &cal);
+	g_zero0 = cal.zero[0];
+	g_zero1 = cal.zero[1];
+	g_zero2 = cal.zero[2];
+	g_one0 = cal.one[0];
+	g_one1 = cal.one[0];
+	g_one2 = cal.one[0];
+
+	g_inited = 2;
+}
+
 // int cwiid_set_rpt_mode(cwiid_wiimote_t *wiimote, uint8_t rpt_mode);
 void l_cwiid_set_rpt_mode(void)
 {
 	/* xxxx void */ cwiid_set_rpt_mode(g_handle, CWIID_RPT_ACC);
-	g_inited = 2;
+	g_inited = 3;
 }
 
 // int cwiid_get_state(cwiid_wiimote_t *wiimote, struct cwiid_state *state)
@@ -62,9 +69,18 @@ void l_cwiid_get_state(void) {
 	g_acc2 = st.acc[2];
 }
 
+double cast_double(uint8_t var) {
+	return (double) var;
+}
+
 void pout64(uint64_t var)
 {
 	printf("(%llu)\n", var);
+}
+
+void pout_d(double var)
+{
+	printf("(%f)\n", var);
 }
 
 int main()
