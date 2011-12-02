@@ -7,6 +7,7 @@
 
 static cwiid_wiimote_t *g_handle = NULL;
 
+uint16_t g_buttons = 0;
 uint8_t g_acc0 = 0; uint8_t g_acc1 = 0; uint8_t g_acc2 = 0;
 uint8_t g_zero0 = 0; uint8_t g_zero1 = 0; uint8_t g_zero2 = 0;
 uint8_t g_one0 = 0; uint8_t g_one1 = 0; uint8_t g_one2 = 0;
@@ -40,7 +41,7 @@ void l_cwiid_get_acc_cal(void)
 
 void l_cwiid_set_rpt_mode(void)
 {
-	if (cwiid_set_rpt_mode(g_handle, CWIID_RPT_ACC)) {
+	if (cwiid_set_rpt_mode(g_handle, CWIID_RPT_ACC | CWIID_RPT_BTN)) {
 		printf("*** cwiid_set_rpt_mode error");
 		exit(3);
 	}
@@ -53,6 +54,7 @@ void l_cwiid_get_state(void) {
 		printf("*** cwiid_get_state error");
 		exit(4);
 	}
+	g_buttons = st.buttons;
 	g_acc0 = st.acc[0]; g_acc1 = st.acc[1]; g_acc2 = st.acc[2];
 }
 
@@ -63,6 +65,16 @@ double cast_double(uint8_t var) {
 void pout_d(double var)
 {
 	printf("ドギャ! (%f)\n", var);
+}
+
+void pout_i(void)
+{
+	printf("イザ...\n");
+}
+
+void pout_s(void)
+{
+	printf("ササ...\n");
 }
 
 int main()
