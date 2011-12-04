@@ -1,3 +1,4 @@
+{-# LANGUAGE RebindableSyntax #-}
 module Fibonacci where
 
 import qualified Prelude as P
