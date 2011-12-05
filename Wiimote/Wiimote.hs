@@ -26,20 +26,13 @@ offB = not n && p
   where n = pressedB
         p = [False] ++ n
 
-dAcc :: StreamTdouble
-dAcc = (externFun "cast_double" [funArg $ externW8 "g_acc0"],
-        externFun "cast_double" [funArg $ externW8 "g_acc1"],
-        externFun "cast_double" [funArg $ externW8 "g_acc2"])
+funCastW8 :: String -> Stream Double
+funCastW8 s = externFun "cast_double" [funArg $ externW8 s]
 
-dZero :: StreamTdouble
-dZero = (externFun "cast_double" [funArg $ externW8 "g_zero0"],
-         externFun "cast_double" [funArg $ externW8 "g_zero1"],
-         externFun "cast_double" [funArg $ externW8 "g_zero2"])
-
-dOne :: StreamTdouble
-dOne = (externFun "cast_double" [funArg $ externW8 "g_one0"],
-        externFun "cast_double" [funArg $ externW8 "g_one1"],
-        externFun "cast_double" [funArg $ externW8 "g_one2"])
+dAcc, dZero, dOne :: StreamTdouble
+dAcc = (funCastW8 "g_acc0", funCastW8 "g_acc1", funCastW8 "g_acc2")
+dZero = (funCastW8 "g_zero0", funCastW8 "g_zero1", funCastW8 "g_zero2")
+dOne = (funCastW8 "g_one0", funCastW8 "g_one1", funCastW8 "g_one2")
 
 aXyz :: StreamTdouble -> StreamTdouble -> StreamTdouble -> StreamTdouble
 aXyz (a1,a2,a3) (z1,z2,z3) (o1,o2,o3) =
@@ -49,7 +42,7 @@ acc :: StreamTdouble -> Stream Double
 acc (ax, ay, az) = sqrt $ ax ** 2 + ay ** 2 + az ** 2
 
 accPrint :: Stream Bool
-accPrint = (accB0 > 4.0) && ((accB1 > 4.0) && (accB2 > 4.0))
+accPrint = foldl1 (&&) $ fmap (> 5.0) [accB0, accB1, accB2]
   where accB0 = acc $ aXyz dAcc dZero dOne
         accB1 = [0] ++ accB0
         accB2 = [0] ++ accB1

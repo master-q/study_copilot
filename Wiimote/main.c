@@ -64,17 +64,17 @@ double cast_double(uint8_t var) {
 
 void pout_d(double var)
 {
-	printf("ドギャ! (%f)\n", var);
+	printf("(｀・ω・´) ドギャ! (%f)\n", var);
 }
 
 void pout_i(void)
 {
-	printf("イザ...\n");
+	printf("|・ω・｀) イザ...\n");
 }
 
 void pout_s(void)
 {
-	printf("ササ...\n");
+	printf("|彡ｻｯ！\n");
 }
 
 int main()
