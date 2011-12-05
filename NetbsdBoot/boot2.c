@@ -52,12 +52,12 @@ void pout_w64(uint64_t var)
 	printf("(%llu)\n", var);
 }
 
-uint8_t l_getchar(void)
+int32_t l_getchar(void)
 {
 	return (getchar() & 0177);
 }
 
-void l_putchar(uint8_t c)
+void l_putchar(int32_t c)
 {
 	putchar((int) c);
 }
