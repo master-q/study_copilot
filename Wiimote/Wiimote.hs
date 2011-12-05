@@ -5,6 +5,8 @@ import qualified Prelude as P
 import Copilot.Language.Prelude
 import Copilot.Language
 
+type StreamTdouble = (Stream Double, Stream Double, Stream Double)
+
 inited :: Stream Word32
 inited = [0,1,2] ++ 3
 
@@ -15,42 +17,41 @@ pressedB :: Stream Bool
 pressedB = (buttons .&. 4) /= 0
 
 onB :: Stream Bool
-onB = n && (not p)
+onB = n && not p
   where n = pressedB
         p = [False] ++ n
 
 offB :: Stream Bool
-offB = (not n) && p
+offB = not n && p
   where n = pressedB
         p = [False] ++ n
 
-dAcc0, dAcc1, dAcc2 :: Stream Double
-dAcc0 = externFun "cast_double" [funArg $ externW8 "g_acc0"]
-dAcc1 = externFun "cast_double" [funArg $ externW8 "g_acc1"]
-dAcc2 = externFun "cast_double" [funArg $ externW8 "g_acc2"]
+dAcc :: StreamTdouble
+dAcc = (externFun "cast_double" [funArg $ externW8 "g_acc0"],
+        externFun "cast_double" [funArg $ externW8 "g_acc1"],
+        externFun "cast_double" [funArg $ externW8 "g_acc2"])
 
-dZero0, dZero1, dZero2, dOne0, dOne1, dOne2 :: Stream Double
-dZero0 = externFun "cast_double" [funArg $ externW8 "g_zero0"]
-dZero1 = externFun "cast_double" [funArg $ externW8 "g_zero1"]
-dZero2 = externFun "cast_double" [funArg $ externW8 "g_zero2"]
-dOne0 = externFun "cast_double" [funArg $ externW8 "g_one0"]
-dOne1 = externFun "cast_double" [funArg $ externW8 "g_one1"]
-dOne2 = externFun "cast_double" [funArg $ externW8 "g_one2"]
+dZero :: StreamTdouble
+dZero = (externFun "cast_double" [funArg $ externW8 "g_zero0"],
+         externFun "cast_double" [funArg $ externW8 "g_zero1"],
+         externFun "cast_double" [funArg $ externW8 "g_zero2"])
 
-aX, aY, aZ :: Stream Double
-aX = (dAcc0 - dZero0) / (dOne0 - dZero0)
-aY = (dAcc0 - dZero0) / (dOne0 - dZero0)
-aZ = (dAcc0 - dZero0) / (dOne0 - dZero0)
+dOne :: StreamTdouble
+dOne = (externFun "cast_double" [funArg $ externW8 "g_one0"],
+        externFun "cast_double" [funArg $ externW8 "g_one1"],
+        externFun "cast_double" [funArg $ externW8 "g_one2"])
 
-acc :: Stream Double
-acc = sqrt $ px + py + pz
-  where px = aX ** 2
-        py = aY ** 2
-        pz = aZ ** 2
+aXyz :: StreamTdouble -> StreamTdouble -> StreamTdouble -> StreamTdouble
+aXyz (a1,a2,a3) (z1,z2,z3) (o1,o2,o3) =
+  ((a1 - z1) / (o1 - z1), (a2 - z2) / (o2 - z2), (a3 - z3) / (o3 - z3))
+
+acc :: StreamTdouble -> Stream Double
+acc (ax, ay, az) = sqrt $ ax ** 2 + ay ** 2 + az ** 2
 
 accPrint :: Stream Bool
-accPrint = (acc > 4.0) && ((accB1 > 4.0) && (accB2 > 4.0))
-  where accB1 = [0] ++ acc
+accPrint = (accB0 > 4.0) && ((accB1 > 4.0) && (accB2 > 4.0))
+  where accB0 = acc $ aXyz dAcc dZero dOne
+        accB1 = [0] ++ accB0
         accB2 = [0] ++ accB1
 
 btnPrint:: Stream Bool
@@ -64,6 +65,6 @@ wiiSpec = do
   trigger "l_cwiid_get_acc_cal" (inited == 1) []
   trigger "l_cwiid_set_rpt_mode" (inited == 2) []
   trigger "l_cwiid_get_state" (inited == 3) []
-  trigger "pout_d" (accPrint && btnPrint) [arg acc]
+  trigger "pout_d" (accPrint && btnPrint) [arg $ acc $ aXyz dAcc dZero dOne]
   trigger "pout_i" onB []
   trigger "pout_s" offB []
