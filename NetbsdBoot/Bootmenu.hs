@@ -5,19 +5,24 @@ import qualified Prelude as P
 import Language.Copilot hiding (even, odd)
 import Copilot.Compile.C99
 
-fib :: Stream Word64
-fib = [0, 1] ++ fib + drop 1 fib
+counter :: Stream Bool -> Stream Word64
+counter reset = y
+  where zy = [0] ++ y
+        y  = if reset then 0 else zy + 1
 
 lGetChar :: Stream Int32
 lGetChar = externFun "l_getchar" []
 
 lPrintable :: Stream Bool
-lPrintable = (lGetChar >= 32) && (lGetChar < 177)
+lPrintable = (lGetChar >= 32) && (lGetChar < 127)
+
+resetCounter :: Stream Bool
+resetCounter = lGetChar == 114
 
 menuSpec :: Spec
 menuSpec = do
   trigger "l_putchar" lPrintable [arg lGetChar]
-  trigger "fib_out" true [arg fib]
+  trigger "counter_out" true [arg $ counter resetCounter]
 
 main :: IO ()
 main = reify menuSpec >>= compile defaultParams
