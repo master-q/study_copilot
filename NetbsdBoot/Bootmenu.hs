@@ -17,6 +17,7 @@ lPrintable = (lGetChar >= 32) && (lGetChar < 177)
 menuSpec :: Spec
 menuSpec = do
   trigger "l_putchar" lPrintable [arg lGetChar]
+  trigger "fib_out" true [arg fib]
 
 main :: IO ()
 main = reify menuSpec >>= compile defaultParams

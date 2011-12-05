@@ -61,3 +61,8 @@ void l_putchar(int32_t c)
 {
 	putchar((int) c);
 }
+
+void fib_out(uint64_t var)
+{
+	printf("(%llu)\n", var);
+}
