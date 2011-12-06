@@ -1,0 +1,11 @@
+Bootmenu: copilot.o main.o
+	gcc -o Bootmenu $^
+
+copilot.c: Bootmenu.hs
+	runghc Bootmenu.hs
+
+clean:
+	rm -f copilot.c copilot.h Bootmenu
+	rm -f *~ *.o *.hi
+
+.PHONY: run clean
