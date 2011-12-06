@@ -8,4 +8,4 @@ clean:
 	rm -f copilot.c copilot.h Bootmenu
 	rm -f *~ *.o *.hi
 
-.PHONY: run clean
+.PHONY: clean
